@@ -1,5 +1,9 @@
 import type { NextConfig } from 'next';
 
-const nextConfig: NextConfig = {};
+// This visualizer has no server-side data or API routes, so a static export
+// keeps hosting simple and makes it ideal for Cloudflare Pages.
+const nextConfig: NextConfig = {
+  output: 'export',
+};
 
 export default nextConfig;
