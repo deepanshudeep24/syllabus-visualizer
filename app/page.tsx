@@ -468,7 +468,7 @@ export default function Home() {
         </div>
         <div className="local-badge">
           <span />
-          Local preview
+          Live on Cloudflare
         </div>
       </header>
       <section className="selector-area">
