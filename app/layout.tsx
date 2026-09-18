@@ -32,6 +32,25 @@ export const metadata: Metadata = {
     url: 'https://syllabus-visualizer-567.pages.dev',
     siteName: 'SyllabusLens',
     type: 'website',
+    images: [
+      {
+        url: '/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'SyllabusLens — SSC CGL 2026 Syllabus Analyzer',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'SyllabusLens — SSC CGL 2026 Syllabus Analyzer',
+    description:
+      'Find the official SSC CGL syllabus, exam pattern, tiers, subjects, and topics in one clear visual guide.',
+    images: ['/og-image.png'],
+  },
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
   },
   robots: { index: true, follow: true },
   verification: {
