@@ -672,6 +672,7 @@ export default function Home() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder="Search topics..."
+                  aria-label="Search topics"
                 />
               </label>
             )}
