@@ -1137,6 +1137,259 @@ const stateExamData: Record<string, StateExamConfig> = {
       },
     ],
   },
+  MPPSC: {
+    fullName: 'MPPSC SSE',
+    interviewMarks: '185 marks personality test after Mains',
+    stages: [
+      {
+        key: 'prelims',
+        label: 'Prelims',
+        sublabel: 'Objective',
+        pattern: {
+          rows: [
+            ['General Studies (Paper I)', '100', '300', '2 hours'],
+            ['General Aptitude Test / CSAT (Paper II)', '100', '300', '2 hours'],
+          ],
+          negativeMarking: '1/3 mark deducted per wrong answer',
+          questionType: 'Objective, multiple choice',
+          language: 'Hindi & English',
+          timeSummary: 'Must pass both papers to qualify for Mains',
+        },
+        subjects: [
+          {
+            name: 'General Studies (Paper I)',
+            short: 'GS Paper I',
+            icon: Globe2,
+            color: '#6658d9',
+            meta: '100 questions · 300 marks · 2 hours',
+            groups: [
+              {
+                title: 'History & culture',
+                topics: [
+                  'Ancient Indian knowledge tradition & Vedic era',
+                  'Social, religious & administrative history of India',
+                  'Independence struggle & national movement',
+                  'History, culture & literature of Madhya Pradesh',
+                  'Major dynasties, tribes & freedom movement in MP',
+                  'Tourist places & world heritage sites in MP',
+                ],
+              },
+              {
+                title: 'Geography, polity & economy',
+                topics: [
+                  'Physical geography of India & natural resources',
+                  'Geography of Madhya Pradesh (rivers, climate, minerals)',
+                  'Constitutional system of India & MP',
+                  'Panchayati Raj & good governance in MP',
+                  'Economy of India & Madhya Pradesh',
+                  'ODOP, Atma Nirbhar MP & financial institutions',
+                ],
+              },
+              {
+                title: 'Science, environment & current affairs',
+                topics: [
+                  'General science & Indian achievements in space tech',
+                  'Human body, nutrition & health programmes',
+                  'Environment, biodiversity & disaster management',
+                  'Information & communication technology',
+                  'Tribes of Madhya Pradesh: heritage & welfare programs',
+                  'International, national & MP current events',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'General Aptitude Test (Paper II) — CSAT',
+            short: 'CSAT',
+            icon: Calculator,
+            color: '#078a70',
+            meta: '100 questions · 300 marks · 2 hours',
+            groups: [
+              {
+                title: 'Reasoning & comprehension',
+                topics: [
+                  'Comprehension',
+                  'Communication skill',
+                  'Logical reasoning & analytical ability',
+                  'Decision making & problem solving',
+                  'General mental ability',
+                ],
+              },
+              {
+                title: 'Numeracy & Hindi',
+                topics: [
+                  'Basic numeracy (Class X level)',
+                  'Data interpretation (charts, graphs, tables)',
+                  'Hindi language comprehension (Class X level)',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        key: 'mains',
+        label: 'Mains',
+        sublabel: 'Descriptive',
+        pattern: {
+          rows: [
+            ['General Studies I', '—', '300', '3 hours'],
+            ['General Studies II', '—', '300', '3 hours'],
+            ['General Studies III', '—', '300', '3 hours'],
+            ['General Studies IV', '—', '200', '3 hours'],
+            ['General Hindi', '—', '200', '2 hours'],
+            ['Hindi Essay', '—', '100', '2.5 hours'],
+          ],
+          total: ['Total', '—', '1400 marks', '—'],
+          negativeMarking: 'Not applicable — descriptive papers',
+          questionType: 'Descriptive (very short, short & long answers, plus a case study in Paper IV)',
+          language: 'Hindi or English (Papers V & VI in Hindi only)',
+          timeSummary: 'Min. 40% per paper (UR category) · Interview: 185 marks',
+        },
+        subjects: [
+          {
+            name: 'General Studies I',
+            short: 'GS I',
+            icon: Landmark,
+            color: '#bd4774',
+            meta: '300 marks · 3 hours',
+            groups: [
+              {
+                title: 'History',
+                topics: [
+                  'India: Harappan civilization to 18th century A.D.',
+                  'Sultanate & Mughal administration',
+                  'Pre-historic & major dynasties of Madhya Pradesh',
+                  'British colonial impact, peasant & tribal revolts',
+                  'MP’s contribution to the freedom struggle',
+                  'Formation & reorganization of Madhya Pradesh',
+                  'Princely states & tribal heroes of MP',
+                ],
+              },
+              {
+                title: 'Geography',
+                topics: [
+                  'Physiographic divisions & climate of India',
+                  'Agriculture, irrigation & water resources',
+                  'Natural resources, industries & disasters',
+                  'Remote sensing, GIS & GPS applications',
+                  'Physiographic divisions of Madhya Pradesh',
+                  'Rivers, soils, crops & industries of MP',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'General Studies II',
+            short: 'GS II',
+            icon: Building2,
+            color: '#2675b8',
+            meta: '300 marks · 3 hours',
+            groups: [
+              {
+                title: 'Constitution, governance & MP administration',
+                topics: [
+                  'Formation, amendments & basic structure of the Constitution',
+                  'Fundamental Rights, Duties & DPSP',
+                  'Election Commission, CAG, UPSC, MPPSC & NITI Aayog',
+                  'Reorganization & administration of Madhya Pradesh',
+                  'Governor, CM, state legislature & MP High Court',
+                  'District administration & Panchayati Raj in MP',
+                ],
+              },
+              {
+                title: 'Sociology',
+                topics: [
+                  'Indian society: family, kinship & caste system',
+                  'Cultural diversity & unity in India',
+                  'Rural & urban sociology, Panchayati Raj',
+                  'Industrialization, globalization & population',
+                  'Human resource development & welfare schemes',
+                  'Tribes of Madhya Pradesh: social structure & culture',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'General Studies III',
+            short: 'GS III',
+            icon: Calculator,
+            color: '#8060a8',
+            meta: '300 marks · 3 hours',
+            groups: [
+              {
+                title: 'Economy',
+                topics: [
+                  'Fundamentals of the Indian economy & Viksit Bharat @2047',
+                  'Fiscal policy, taxation & foreign trade',
+                  'Overview of Madhya Pradesh economy',
+                  'Atma Nirbhar MP, ODOP & tribal economy',
+                  'Statistics, data analysis & probability',
+                ],
+              },
+              {
+                title: 'Science, technology & public health',
+                topics: [
+                  'General science & biotechnology',
+                  'Computer science & artificial intelligence',
+                  'E-governance & digital initiatives',
+                  'Patents & intellectual property rights',
+                ],
+              },
+            ],
+          },
+          {
+            name: 'General Studies IV',
+            short: 'GS IV',
+            icon: Brain,
+            color: '#9a651b',
+            meta: '200 marks · 3 hours',
+            groups: [
+              {
+                title: 'Philosophy, psychology & public administration',
+                topics: ['Philosophy', 'Psychology', 'Public administration', 'Case study'],
+              },
+              {
+                title: 'Management & personality',
+                topics: ['Management', 'Personality development', 'Case study'],
+              },
+            ],
+          },
+          {
+            name: 'General Hindi',
+            short: 'Hindi',
+            icon: Languages,
+            color: '#d36a2e',
+            meta: '200 marks · 2 hours · Hindi medium only',
+            groups: [
+              {
+                title: 'सामान्य हिंदी एवं व्याकरण',
+                topics: ['Comprehension (गद्यांश)', 'Grammar (व्याकरण)', 'Translation', 'Letter & official writing'],
+              },
+            ],
+          },
+          {
+            name: 'Hindi Essay',
+            short: 'Hindi Essay',
+            icon: FileText,
+            color: '#6658d9',
+            meta: '100 marks · 2.5 hours · Hindi medium only',
+            groups: [
+              {
+                title: 'हिन्दी निबंध एवं प्रारूप लेखन',
+                topics: [
+                  'First essay, 1000 words (50 marks)',
+                  'Second essay, 500 words (20 marks)',
+                  'Draft writing, 500 words (15 marks)',
+                  'Report writing, 250 words (15 marks)',
+                ],
+              },
+            ],
+          },
+        ],
+      },
+    ],
+  },
 };
 
 export default function Home() {
@@ -1468,7 +1721,6 @@ export default function Home() {
           <div className="state-examples">
             <b>State-level exam examples</b>
             <div>
-              <span>MPPSC SSE</span>
               <span>MPSC Rajyaseva</span>
               <span>WBPSC WBCS</span>
               <span>State Police SI</span>
