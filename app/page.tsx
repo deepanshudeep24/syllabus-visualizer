@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useSyncExternalStore } from 'react';
 import {
   ArrowRight,
   BookOpen,
@@ -30,6 +30,113 @@ type Subject = {
   meta: string;
   groups: Group[];
 };
+
+const PROGRESS_KEY = 'syllabuslens-progress';
+
+function topicId(examKey: string, subjectName: string, topic: string) {
+  return `${examKey}::${subjectName}::${topic}`;
+}
+
+let progressListeners: Array<() => void> = [];
+let cachedProgressRaw: string | null = null;
+let cachedProgressValue: Record<string, boolean> = {};
+
+function readProgress(): Record<string, boolean> {
+  if (typeof window === 'undefined') return cachedProgressValue;
+  let raw: string | null;
+  try {
+    raw = localStorage.getItem(PROGRESS_KEY);
+  } catch {
+    raw = null;
+  }
+  if (raw !== cachedProgressRaw) {
+    cachedProgressRaw = raw;
+    try {
+      cachedProgressValue = raw ? JSON.parse(raw) : {};
+    } catch {
+      cachedProgressValue = {};
+    }
+  }
+  return cachedProgressValue;
+}
+
+function writeProgress(next: Record<string, boolean>) {
+  try {
+    localStorage.setItem(PROGRESS_KEY, JSON.stringify(next));
+  } catch {
+    // ignore unavailable/blocked storage
+  }
+  cachedProgressRaw = null; // force readProgress to re-parse on next read
+  for (const listener of progressListeners) listener();
+}
+
+function subscribeProgress(listener: () => void) {
+  progressListeners.push(listener);
+  return () => {
+    progressListeners = progressListeners.filter((l) => l !== listener);
+  };
+}
+
+function getServerProgressSnapshot(): Record<string, boolean> {
+  return {};
+}
+
+function useTopicProgress() {
+  const done = useSyncExternalStore(subscribeProgress, readProgress, getServerProgressSnapshot);
+
+  const toggle = (id: string) => {
+    const next = { ...readProgress() };
+    if (next[id]) delete next[id];
+    else next[id] = true;
+    writeProgress(next);
+  };
+
+  const clearPrefix = (prefix: string) =>
+    writeProgress(
+      Object.fromEntries(
+        Object.entries(readProgress()).filter(([id]) => !id.startsWith(`${prefix}::`)),
+      ),
+    );
+
+  return { done, toggle, clearPrefix };
+}
+
+function subjectsProgress(subjects: Subject[], examKey: string, done: Record<string, boolean>) {
+  let total = 0;
+  let complete = 0;
+  for (const s of subjects) {
+    for (const g of s.groups) {
+      for (const t of g.topics) {
+        total += 1;
+        if (done[topicId(examKey, s.name, t)]) complete += 1;
+      }
+    }
+  }
+  return { total, complete };
+}
+
+function ProgressSummary({
+  total,
+  complete,
+  onReset,
+}: {
+  total: number;
+  complete: number;
+  onReset: () => void;
+}) {
+  const pct = total ? Math.round((complete / total) * 100) : 0;
+  return (
+    <div className="progress-summary">
+      <div className="progress-track">
+        <div className="progress-fill" style={{ width: `${pct}%` }} />
+      </div>
+      <span>
+        {complete}/{total} topics tracked
+      </span>
+      {complete > 0 && <button onClick={onReset}>Reset</button>}
+    </div>
+  );
+}
 
 const tier1: Subject[] = [
   {
@@ -1401,7 +1508,10 @@ export default function Home() {
   const [view, setView] = useState<'syllabus' | 'pattern'>('syllabus');
   const [filter, setFilter] = useState('All');
   const [query, setQuery] = useState('');
+  const { done, toggle, clearPrefix } = useTopicProgress();
+  const examKey = `central-${tier}`;
   const subjects = tier === 'Tier I' ? tier1 : tier2;
+  const progress = subjectsProgress(subjects, examKey, done);
   const visible = useMemo(
     () =>
       subjects.filter(
@@ -1670,9 +1780,20 @@ export default function Home() {
                     : 'Paper I is compulsory. Papers II and III apply only to selected posts.'}
                 </p>
               </div>
+              <ProgressSummary
+                total={progress.total}
+                complete={progress.complete}
+                onReset={() => clearPrefix(examKey)}
+              />
               <div className="grid">
                 {visible.map((s) => (
-                  <SubjectCard subject={s} key={s.name} />
+                  <SubjectCard
+                    subject={s}
+                    key={s.name}
+                    examKey={examKey}
+                    done={done}
+                    toggle={toggle}
+                  />
                 ))}
                 {!visible.length && (
                   <div className="empty">
@@ -1793,10 +1914,25 @@ function examOptions(body: string) {
   return map[body] || [];
 }
 
-function SubjectCard({ subject }: { subject: Subject }) {
+function SubjectCard({
+  subject,
+  examKey,
+  done,
+  toggle,
+}: {
+  subject: Subject;
+  examKey: string;
+  done: Record<string, boolean>;
+  toggle: (id: string) => void;
+}) {
   const [open, setOpen] = useState(false);
   const Icon = subject.icon;
   const count = subject.groups.reduce((n, g) => n + g.topics.length, 0);
+  const doneCount = subject.groups.reduce(
+    (n, g) => n + g.topics.filter((t) => done[topicId(examKey, subject.name, t)]).length,
+    0,
+  );
+  const remainingGroups = subject.groups.length - 2;
   return (
     <article
       className="card"
@@ -1810,23 +1946,40 @@ function SubjectCard({ subject }: { subject: Subject }) {
           <h3>{subject.name}</h3>
           <p>{subject.meta}</p>
         </div>
-        <span>{count} topics</span>
+        <span>
+          {doneCount}/{count} done
+        </span>
       </div>
       <div className="groups">
         {(open ? subject.groups : subject.groups.slice(0, 2)).map((g) => (
           <div className="group" key={g.title}>
             <h4>{g.title}</h4>
             <div>
-              {g.topics.map((t) => (
-                <span key={t}>{t}</span>
-              ))}
+              {g.topics.map((t) => {
+                const id = topicId(examKey, subject.name, t);
+                const isDone = !!done[id];
+                return (
+                  <button
+                    type="button"
+                    key={t}
+                    className={isDone ? 'topic done' : 'topic'}
+                    onClick={() => toggle(id)}
+                    aria-pressed={isDone}
+                  >
+                    <span className="tick">{isDone && <Check size={10} />}</span>
+                    {t}
+                  </button>
+                );
+              })}
             </div>
           </div>
         ))}
       </div>
-      {subject.groups.length > 2 && (
+      {remainingGroups > 0 && (
         <button className="more" onClick={() => setOpen(!open)}>
-          {open ? 'Show less' : `View ${subject.groups.length - 2} more groups`}
+          {open
+            ? 'Show less'
+            : `View ${remainingGroups} more ${remainingGroups === 1 ? 'group' : 'groups'}`}
           <ChevronRight className={open ? 'turn' : ''} />
         </button>
       )}
@@ -1944,7 +2097,10 @@ function StateWorkspace({
   const [view, setView] = useState<'syllabus' | 'pattern'>('syllabus');
   const [filter, setFilter] = useState('All');
   const [query, setQuery] = useState('');
+  const { done, toggle, clearPrefix } = useTopicProgress();
   const stage = config.stages.find((s) => s.key === stageKey) ?? config.stages[0];
+  const examKey = `${bodyName}-${stage.key}`;
+  const progress = subjectsProgress(stage.subjects, examKey, done);
   const totalMarks = stage.pattern.rows.reduce((sum, row) => {
     const marks = parseInt(row[2].replace(/[^0-9]/g, ''), 10);
     return sum + (Number.isNaN(marks) ? 0 : marks);
@@ -2066,9 +2222,20 @@ function StateWorkspace({
             </div>
             <p>{stage.pattern.timeSummary}</p>
           </div>
+          <ProgressSummary
+            total={progress.total}
+            complete={progress.complete}
+            onReset={() => clearPrefix(examKey)}
+          />
           <div className="grid">
             {visible.map((s) => (
-              <SubjectCard subject={s} key={s.name} />
+              <SubjectCard
+                subject={s}
+                key={s.name}
+                examKey={examKey}
+                done={done}
+                toggle={toggle}
+              />
             ))}
             {!visible.length && (
               <div className="empty">
